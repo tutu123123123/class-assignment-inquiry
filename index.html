@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>永昌泾幼儿园2025年秋季小班分班查询</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      /* 淡淡的背景色+背景图片（可后期更换） */
+      background: linear-gradient(135deg, #e0f7fa 0%, #fffde4 100%);
+      min-height: 100vh;
+      margin: 0;
+      font-family: "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      position: relative;
+    }
+    .background-decoration {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      background: url('https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=900&q=80') center/cover no-repeat;
+      opacity: 0.08;
+    }
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 400px;
+      margin: 60px auto 0 auto;
+      background: rgba(255,255,255,0.96);
+      border-radius: 20px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.07);
+      padding: 32px 28px 28px 28px;
+    }
+    .header-block {
+      background: #8ecae6;
+      border-radius: 14px;
+      text-align: center;
+      padding: 24px 0 16px 0;
+      margin-bottom: 30px;
+      color: #fff;
+    }
+    .header-block h1 {
+      margin: 0;
+      font-size: 1.3rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+    }
+    label {
+      font-size: 1rem;
+      color: #27334b;
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 500;
+    }
+    .input-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      font-size: 1rem;
+      border: 1px solid #b3c1e2;
+      border-radius: 7px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.2s;
+      background: #f9fbfc;
+    }
+    input[type="text"]:focus {
+      border-color: #8ecae6;
+    }
+    .error-text {
+      color: #ff4d4f;
+      font-size: 0.92rem;
+      margin-top: 6px;
+      margin-bottom: -6px;
+      min-height: 18px;
+    }
+    .result-text {
+      margin-top: 28px;
+      font-size: 1.13rem;
+      color: #219653;
+      text-align: center;
+      font-weight: bold;
+    }
+    button {
+      width: 100%;
+      padding: 12px 0;
+      background: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.18s;
+    }
+    button:hover {
+      background: #1976d2;
+    }
+  </style>
+</head>
+<body>
+  <div class="background-decoration"></div>
+  <div class="container">
+    <div class="header-block">
+      <h1>永昌泾幼儿园2025年秋季小班分班查询</h1>
+    </div>
+    <div id="form-area">
+      <div class="input-group">
+        <label for="name">姓名</label>
+        <input type="text" id="name" placeholder="请输入姓名" autocomplete="off">
+        <div class="error-text" id="name-error"></div>
+      </div>
+      <div class="input-group">
+        <label for="idnum">身份证号</label>
+        <input type="text" id="idnum" placeholder="请输入身份证号" autocomplete="off">
+        <div class="error-text" id="id-error"></div>
+      </div>
+      <button id="query-btn">查询</button>
+      <div class="result-text" id="result"></div>
+    </div>
+  </div>
+  <script>
+    // 数据变量（可随时更改和扩充）
+    // 格式：{ 姓名: { 身份证号: 班级 } }
+    const classData = {
+      "小红": { "321292121200123456": "小1班", "321292121200654321": "小2班" },
+      "小明": { "320102198706245678": "小2班" },
+      "乐乐": { "320292200512346789": "小3班" },
+      "婷婷": { "320292200512349876": "小1班" },
+      "安安": { "320292200512341234": "小3班" }
+      // ... 可继续添加
+    };
+
+    const nameInput = document.getElementById("name");
+    const idInput = document.getElementById("idnum");
+    const btn = document.getElementById("query-btn");
+    const nameErr = document.getElementById("name-error");
+    const idErr = document.getElementById("id-error");
+    const result = document.getElementById("result");
+
+    function clearErrors() {
+      nameErr.textContent = "";
+      idErr.textContent = "";
+      result.textContent = "";
+    }
+
+    btn.onclick = function() {
+      clearErrors();
+      const name = nameInput.value.trim();
+      const idnum = idInput.value.trim();
+      let hasError = false;
+
+      // 校验姓名
+      if (!classData[name]) {
+        nameErr.textContent = "请输入正确的姓名";
+        hasError = true;
+      } else {
+        nameErr.textContent = "";
+      }
+
+      // 校验身份证
+      if (classData[name]) {
+        if (!classData[name][idnum]) {
+          idErr.textContent = "请输入正确的身份证号";
+          hasError = true;
+        } else {
+          idErr.textContent = "";
+        }
+      }
+
+      // 如果都没错，显示班级
+      if (!hasError && classData[name] && classData[name][idnum]) {
+        result.textContent = `您的孩子在 “${classData[name][idnum]}”`;
+      } else {
+        result.textContent = "";
+      }
+    };
+
+    // 回车快捷查询
+    [nameInput, idInput].forEach(input => {
+      input.addEventListener('keyup', function(e) {
+        if (e.key === 'Enter') btn.click();
+      });
+    });
+  </script>
+</body>
+</html>
