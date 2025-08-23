@@ -16,7 +16,18 @@
     input[type="text"]:focus {border-color: #8ecae6;}
     .error-text {color: #ff4d4f;font-size: 0.92rem;margin-top: 6px;margin-bottom: -6px;min-height: 18px;}
     .result-block {display: flex; flex-direction: column; align-items: center; justify-content: center; margin-top: 24px; margin-bottom: 10px;}
-    .qr-img {display: flex; align-items: center; justify-content: center; width: 180px; height: 180px; margin: 0 auto 18px auto; background: #fafbfc; border-radius: 12px; box-shadow: 0 2px 12px rgba(85,198,255,0.1);}
+    .qr-img {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 270px;
+      height: 270px;
+      margin: 0 auto 18px auto;
+      background: #fafbfc;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(85,198,255,0.1);
+      overflow: hidden;
+    }
     .result-text {font-size: 1.13rem;color: #219653;text-align: center;font-weight: bold;margin-bottom: 20px;}
     button {width: 100%;padding: 12px 0;background: #2196f3;color: #fff;border: none;border-radius: 7px;font-size: 1.05rem;font-weight: 600;cursor: pointer;margin-top: 6px;transition: background 0.18s;}
     button:hover {background: #1976d2;}
@@ -52,22 +63,17 @@
       <button id="back-btn">返回</button>
     </div>
   </div>
-  <!-- qrcode.js库，直接引用cdn -->
-  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <!-- 已去除二维码生成库，直接展示图片 -->
   <script>
-    // 分班数据（可修改）
+    // 分班数据（只保留两个班级）
     const classData = {
-      "小红": { "321292121200123456": "小1班", "321292121200654321": "小2班" },
-      "小明": { "320102198706245678": "小2班" },
-      "乐乐": { "320292200512346789": "小3班" },
-      "婷婷": { "320292200512349876": "小1班" },
-      "安安": { "320292200512341234": "小3班" }
+      "小红": { "321292121200123456": "小1班" },
+      "小明": { "320102198706245678": "小2班" }
     };
-    // 伪造二维码内容（实际请替换为真实群邀请或群号/链接）
+    // 二维码图片地址，指向本地 Image 文件夹
     const qrContent = {
-      "小1班": "https://wechat.com/group/1234567890?from=kindergarten1",
-      "小2班": "https://wechat.com/group/2222222222?from=kindergarten2",
-      "小3班": "https://wechat.com/group/3333333333?from=kindergarten3"
+      "小1班": "Image/小1班.jpg",
+      "小2班": "Image/小2班.jpg"
     };
 
     // DOM元素
@@ -82,7 +88,6 @@
     const qrImg = document.getElementById("qr-img");
     const resultText = document.getElementById("result-text");
 
-    // 保存上一次输入的数据
     let lastName = "";
     let lastIdnum = "";
 
@@ -102,20 +107,13 @@
     function showForm() {
       formArea.classList.remove("hidden");
       resultArea.classList.add("hidden");
-      // 保留输入，填充上一次数据
       nameInput.value = lastName;
       idInput.value = lastIdnum;
       clearErrors();
     }
 
     function showResult(className) {
-      qrImg.innerHTML = "";
-      let qrString = qrContent[className] || className;
-      new QRCode(qrImg, {
-        text: qrString,
-        width: 180,
-        height: 180
-      });
+  qrImg.innerHTML = `<img src="${qrContent[className] || ''}" alt="二维码" style="width:100%;height:100%;object-fit:contain;display:block;">`;
       resultText.textContent = `您的孩子所在的班级是「${className}」，扫上面的二维码进群`;
       formArea.classList.add("hidden");
       resultArea.classList.remove("hidden");
@@ -129,7 +127,6 @@
       lastIdnum = idnum;
       let hasError = false;
 
-      // 校验姓名
       if (!classData[name]) {
         nameErr.textContent = "请输入正确的姓名";
         hasError = true;
@@ -137,7 +134,6 @@
         nameErr.textContent = "";
       }
 
-      // 校验身份证
       if (classData[name]) {
         if (!classData[name][idnum]) {
           idErr.textContent = "请输入正确的身份证号";
@@ -147,7 +143,6 @@
         }
       }
 
-      // 成功则显示二维码结果
       if (!hasError && classData[name] && classData[name][idnum]) {
         const className = classData[name][idnum];
         showResult(className);
@@ -158,14 +153,12 @@
       showForm();
     };
 
-    // 支持回车快速查询
     [nameInput, idInput].forEach(input => {
       input.addEventListener('keyup', function(e) {
         if (e.key === 'Enter') btnQuery.click();
       });
     });
 
-    // 页面初始化
     showForm();
   </script>
 </body>
