@@ -167,7 +167,7 @@
     function showResult(className) {
       const name = lastName;
       const idnum = lastIdnum;
-      const qrImgTag = `<img src="${qrContent[className] || ''}" alt="二维码">`;
+      const qrUrl = qrContent[className] || '';
       const gridHtml = `
         <div class="result-grid">
           <div class="label">姓名</div>
@@ -177,13 +177,59 @@
           <div class="label">班级</div>
           <div class="value">${className}</div>
           <div class="label" style="border-bottom: none;">班级群二维码</div>
-          <div class="value qr-img-cell" style="border-bottom: none;">${qrImgTag}</div>
+          <div class="value qr-img-cell" style="border-bottom: none;">
+            <span id="qr-loading" style="color:#2196f3;font-size:1rem;">群二维码正在加载...</span>
+            <img id="qr-img-real" src="${qrUrl}" alt="二维码" style="display:none;">
+            <span id="qr-error" style="color:#ff4d4f;font-size:1rem;display:none;cursor:pointer;">二维码加载失败，点击重新加载</span>
+          </div>
         </div>
       `;
       qrImg.innerHTML = gridHtml;
       resultText.textContent = "";
       formArea.classList.add("hidden");
       resultArea.classList.remove("hidden");
+
+      // 加载逻辑
+      const img = document.getElementById('qr-img-real');
+      const loading = document.getElementById('qr-loading');
+      const error = document.getElementById('qr-error');
+      let timer = null;
+      function showError() {
+        loading.style.display = 'none';
+        img.style.display = 'none';
+        error.style.display = 'inline';
+      }
+      function showImg() {
+        loading.style.display = 'none';
+        img.style.display = 'block';
+        error.style.display = 'none';
+      }
+      function reloadImg() {
+        loading.style.display = 'inline';
+        img.style.display = 'none';
+        error.style.display = 'none';
+        img.src = qrUrl + '?t=' + Date.now();
+        timer = setTimeout(() => {
+          showError();
+        }, 30000);
+      }
+      img.onload = function() {
+        clearTimeout(timer);
+        showImg();
+      };
+      img.onerror = function() {
+        clearTimeout(timer);
+        showError();
+      };
+      error.onclick = function() {
+        reloadImg();
+      };
+      timer = setTimeout(() => {
+        showError();
+      }, 30000);
+      // 首次加载
+      img.style.display = 'none';
+      loading.style.display = 'inline';
     }
 
     btnQuery.onclick = function() {
